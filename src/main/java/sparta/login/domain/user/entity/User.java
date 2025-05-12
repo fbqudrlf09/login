@@ -1,4 +1,4 @@
-package sparta.login.global.domain.user.entity;
+package sparta.login.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
