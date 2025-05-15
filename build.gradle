@@ -38,7 +38,7 @@ dependencies {
     // password 인코더
     implementation 'at.favre.lib:bcrypt:0.10.2'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 }
 
 tasks.named('test') {

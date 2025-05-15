@@ -1,5 +1,6 @@
 package sparta.login.global.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
@@ -13,7 +14,11 @@ public class ErrorResponse {
 
 	@Getter
 	static class ErrorDetail{
+
+		@Schema(description = "에러 코드명")
 		private final String code;
+
+		@Schema(description = "에러 설명")
 		private final String message;
 
 		public ErrorDetail(String code, String message) {
