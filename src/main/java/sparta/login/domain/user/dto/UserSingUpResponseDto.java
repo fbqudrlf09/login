@@ -14,9 +14,9 @@ public class UserSingUpResponseDto {
 	private List<Role> roles;
 
 	@Builder
-	public UserSingUpResponseDto(String username, String nickname, List<Role> roles) {
+	public UserSingUpResponseDto(String username, String nickname, Role roles) {
 		this.username = username;
 		this.nickname = nickname;
-		this.roles = roles;
+		this.roles = List.of(roles);
 	}
 }

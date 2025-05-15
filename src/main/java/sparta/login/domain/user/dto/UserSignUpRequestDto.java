@@ -2,6 +2,7 @@ package sparta.login.domain.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import sparta.login.domain.user.entity.Role;
 import sparta.login.domain.user.entity.User;
 
 @Getter
@@ -21,11 +22,12 @@ public class UserSignUpRequestDto {
 	}
 
 	@Builder
-	public User toEntity(String encodedPassword) {
+	public User toEntity(String encodedPassword, Role role) {
 		return User.builder()
 			.username(username)
 			.password(encodedPassword)
 			.nickname(nickname)
+			.role(role)
 			.build();
 	}
 }

@@ -42,13 +42,13 @@ public class UserService {
 		String encodePassword = passwordEncoder.encode(userRegisterDto.getPassword());
 
 		// user repository에 저장
-		User user = userRegisterDto.toEntity(encodePassword);
+		User user = userRegisterDto.toEntity(encodePassword, Role.USER);
 		userRepository.save(user);
 
 		return UserSingUpResponseDto.builder()
 			.username(user.getUsername())
 			.nickname(user.getNickname())
-			.roles(List.of(user.getRole()))
+			.roles(user.getRole())
 			.build();
 	}
 
