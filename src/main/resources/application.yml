@@ -7,6 +7,20 @@ spring:
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database: mysql
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: true
+        enable_lazy_load_no_trans: true
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -17,3 +31,4 @@ jwt:
   secret: your-very-long-secret-key-string-at-least-32-characters
   access-expire-millis: 1800000  # 액세스 토큰 만료: 30분
   refresh-expire-millis: 864000000 # 리프레시 토큰 만료: 10일
+
