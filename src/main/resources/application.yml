@@ -12,3 +12,8 @@ springdoc:
     path: /swagger-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
+
+jwt:
+  secret: test
+  access-expire-millis: 1800000  # 액세스 토큰 만료: 30분
+  refresh-expire-millis: 864000000 # 리프레시 토큰 만료: 10일

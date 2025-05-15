@@ -23,4 +23,6 @@ public class User {
 
 	@Column(nullable = false)
 	private String nickname;
+
+	private Role role = Role.USER;
 }
