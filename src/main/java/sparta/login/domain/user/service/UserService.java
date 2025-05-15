@@ -1,15 +1,19 @@
 package sparta.login.domain.user.service;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import sparta.login.domain.user.dto.UserAuthSettingResponseDto;
 import sparta.login.domain.user.dto.UserLoginRequestDto;
 import sparta.login.domain.user.dto.UserLoginResponseDto;
 import sparta.login.domain.user.dto.UserSignUpRequestDto;
 import sparta.login.domain.user.dto.UserSingUpResponseDto;
+import sparta.login.domain.user.entity.Role;
 import sparta.login.domain.user.entity.User;
 import sparta.login.domain.user.repository.UserRepository;
 import sparta.login.global.auth.jwt.Jwt;
@@ -67,6 +71,20 @@ public class UserService {
 		return new UserLoginResponseDto(jwt.getAccessToken());
 	}
 
+	@Transactional
+	public UserAuthSettingResponseDto authSetting(Long userId) {
+
+		User user = getUser(userId);
+
+		user.setRole(Role.ADMIN);
+
+		return UserAuthSettingResponseDto.builder()
+			.username(user.getUsername())
+			.nickname(user.getNickname())
+			.roles(List.of(user.getRole()))
+			.build();
+	}
+
 	private void checkingPassword(UserLoginRequestDto userLoginRequestDto, User user) {
 		if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword())) {
 			throw new BadValueException(ExceptionEnum.INVALID_CREDENTIALS);
@@ -76,5 +94,9 @@ public class UserService {
 	private User getUser(UserLoginRequestDto userLoginRequestDto) {
 		return userRepository.findByUsername(userLoginRequestDto.getUsername())
 			.orElseThrow(() -> new BadValueException(ExceptionEnum.INVALID_CREDENTIALS));
+	}
+
+	private User getUser(Long userId) {
+		return userRepository.findById(userId).orElseThrow(() -> new BadValueException(ExceptionEnum.NOT_FOUND));
 	}
 }

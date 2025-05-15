@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import sparta.login.global.exception.BadValueException;
+import sparta.login.global.exception.ExceptionEnum;
 
 @Component
 public class JwtProvider {
@@ -49,12 +52,23 @@ public class JwtProvider {
 			.compact();
 	}
 
-	public Claims getClaims(String token) {
-		return Jwts.parser()
-			.setSigningKey(key)
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+	// 토큰 검증
+	public Claims validateToken(String jwtToken) {
+		try {
+			Claims claims = Jwts.parser()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(jwtToken)
+				.getBody();
+
+			if(claims.getExpiration().before(new Date())) {
+				throw new BadValueException(ExceptionEnum.EXPIRE_TOKEN);
+			}
+			return claims;
+
+		} catch (Exception e) {
+			throw new BadValueException(ExceptionEnum.INVALID_TOKEN);
+		}
 	}
 
 	public Date getExpireDateAccessToken() {
