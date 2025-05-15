@@ -118,8 +118,4 @@ class UserServiceTest {
 		// when //then
 		assertThrows(BadValueException.class, () -> userService.loginUser(requestDto));
 	}
-
-	@Test
-
-
 }
