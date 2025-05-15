@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +18,14 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import sparta.login.domain.user.dto.UserLoginRequestDto;
+import sparta.login.domain.user.dto.UserLoginResponseDto;
 import sparta.login.domain.user.dto.UserSignUpRequestDto;
 import sparta.login.domain.user.dto.UserSingUpResponseDto;
 import sparta.login.domain.user.entity.Role;
 import sparta.login.domain.user.entity.User;
 import sparta.login.domain.user.repository.UserRepository;
+import sparta.login.global.auth.jwt.Jwt;
+import sparta.login.global.auth.jwt.JwtProvider;
 import sparta.login.global.config.PasswordEncoder;
 import sparta.login.global.exception.BadValueException;
 
@@ -35,6 +40,9 @@ class UserServiceTest {
 
 	@Mock
 	private PasswordEncoder passwordEncoder;
+
+	@Mock
+	private JwtProvider jwtProvider;
 
 	@Test
 	public void 회원가입_정상_검증() {
@@ -65,4 +73,51 @@ class UserServiceTest {
 			userService.registerUser(requestDto);
 		});
 	}
+
+	@Test
+	void 로그인_정상_검증(){
+	    // given
+		UserLoginRequestDto requestDto = new UserLoginRequestDto("username", "password");
+		User user = new User("username", "encodedPassword", "nickname", Role.USER);
+		user.setId(1L);
+
+		when(userRepository.findByUsername("username")).thenReturn((Optional.of(user)));
+		when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
+
+		Jwt jwt = new Jwt("accessToken", "refreshToken");
+		when(jwtProvider.createJwt(any(Map.class))).thenReturn(jwt);
+
+		// when
+		UserLoginResponseDto responseDto = userService.loginUser(requestDto);
+
+		// then
+		assertEquals("accessToken", responseDto.getToken());
+
+	}
+
+	@Test
+	void 로그인_비밀번호_불일치(){
+	    // given
+		UserLoginRequestDto requestDto = new UserLoginRequestDto("username", "password");
+		User user = new User("username", "encodedPassword", "nickname", Role.USER);
+		user.setId(1L);
+
+		when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
+		when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(false);
+
+		// when //then
+		assertThrows(BadValueException.class, () -> userService.loginUser(requestDto));
+	}
+
+	@Test
+	void 로그인_유저조회_실패(){
+	    // given
+		UserLoginRequestDto requestDto = new UserLoginRequestDto("username", "password");
+		when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
+
+		// when //then
+		assertThrows(BadValueException.class, () -> userService.loginUser(requestDto));
+	}
+
+
 }
