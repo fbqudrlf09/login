@@ -5,7 +5,7 @@ import lombok.Getter;
 import sparta.login.domain.user.entity.User;
 
 @Getter
-public class UserRegisterDto {
+public class UserSignUpRequestDto {
 
 	private String username;
 
@@ -14,7 +14,7 @@ public class UserRegisterDto {
 	private String nickname;
 
 	@Builder
-	public UserRegisterDto(String username, String password, String nickname) {
+	public UserSignUpRequestDto(String username, String password, String nickname) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;

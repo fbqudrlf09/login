@@ -3,7 +3,6 @@ package sparta.login.global.auth.jwt;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +33,8 @@ public class JwtProvider {
 	}
 
 	public Jwt createJwt(Map<String, Object> claims) {
-		String accessToken = createToken(new HashMap<>(), getExpireDateAccessToken());
-		String refreshToken = createToken(new HashMap<>(), getExpireDateRefreshToekn());
+		String accessToken = createToken(claims, getExpireDateAccessToken());
+		String refreshToken = createToken(claims, getExpireDateRefreshToken());
 		return Jwt.builder()
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
@@ -62,7 +61,7 @@ public class JwtProvider {
 		return new Date(System.currentTimeMillis() + accessExpireMillis);
 	}
 
-	public Date getExpireDateRefreshToekn() {
+	public Date getExpireDateRefreshToken() {
 		return new Date(System.currentTimeMillis() + refreshExpireMillis);
 	}
 }

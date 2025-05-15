@@ -1,14 +1,19 @@
 package sparta.login.domain.user.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import sparta.login.domain.user.dto.UserRegisterDto;
+import sparta.login.domain.user.dto.UserLoginRequestDto;
+import sparta.login.domain.user.dto.UserLoginResponseDto;
+import sparta.login.domain.user.dto.UserSignUpRequestDto;
 import sparta.login.domain.user.dto.UserSingUpResponseDto;
 import sparta.login.domain.user.entity.User;
 import sparta.login.domain.user.repository.UserRepository;
+import sparta.login.global.auth.jwt.Jwt;
+import sparta.login.global.auth.jwt.JwtProvider;
 import sparta.login.global.config.PasswordEncoder;
 import sparta.login.global.exception.BadValueException;
 import sparta.login.global.exception.ExceptionEnum;
@@ -20,8 +25,9 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	private final PasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 
-	public UserSingUpResponseDto registerUser(UserRegisterDto userRegisterDto) {
+	public UserSingUpResponseDto registerUser(UserSignUpRequestDto userRegisterDto) {
 
 		// 중복 체크
 		if (userRepository.existsByUsername(userRegisterDto.getUsername())) {
@@ -40,5 +46,35 @@ public class UserService {
 			.nickname(user.getNickname())
 			.roles(List.of(user.getRole()))
 			.build();
+	}
+
+	public UserLoginResponseDto loginUser(UserLoginRequestDto userLoginRequestDto) {
+		// 유저 조회
+		User user = getUser(userLoginRequestDto);
+
+		// 비밀번호 검증
+		checkingPassword(userLoginRequestDto, user);
+
+		// jwt 토큰 생성
+		Map<String, Object> claims = Map.of(
+			"userId", user.getId(),
+			"username", user.getUsername(),
+			"roles", user.getRole()
+		);
+
+		Jwt jwt = jwtProvider.createJwt(claims);
+
+		return new UserLoginResponseDto(jwt.getAccessToken());
+	}
+
+	private void checkingPassword(UserLoginRequestDto userLoginRequestDto, User user) {
+		if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword())) {
+			throw new BadValueException(ExceptionEnum.INVALID_CREDENTIALS);
+		}
+	}
+
+	private User getUser(UserLoginRequestDto userLoginRequestDto) {
+		return userRepository.findByUsername(userLoginRequestDto.getUsername())
+			.orElseThrow(() -> new BadValueException(ExceptionEnum.INVALID_CREDENTIALS));
 	}
 }
