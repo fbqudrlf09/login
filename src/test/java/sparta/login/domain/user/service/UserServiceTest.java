@@ -102,6 +102,7 @@ class UserServiceTest {
 		User user = new User("username", "encodedPassword", "nickname", Role.USER);
 		user.setId(1L);
 
+
 		when(userRepository.findByUsername("username")).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(false);
 
