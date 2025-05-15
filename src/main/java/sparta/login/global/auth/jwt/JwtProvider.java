@@ -1,5 +1,6 @@
 package sparta.login.global.auth.jwt;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,12 +12,13 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtProvider {
 
 	@Value("${jwt.secret}")
-	private long secret;
+	private String secret;
 
 	@Value("${jwt.access-expire-millis}")
 	private long accessExpireMillis;
@@ -24,7 +26,12 @@ public class JwtProvider {
 	@Value("${jwt.refresh-expire-millis}")
 	private long refreshExpireMillis;
 
-	private final Key key = Keys.hmacShaKeyFor(String.valueOf(secret).getBytes());
+	private Key key;
+
+	@PostConstruct
+	public void init() {
+		this.key = Keys.hmacShaKeyFor(String.valueOf(secret).getBytes(StandardCharsets.UTF_8));
+	}
 
 	public Jwt createJwt(Map<String, Object> claims) {
 		String accessToken = createToken(new HashMap<>(), getExpireDateAccessToken());

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import sparta.login.domain.user.dto.UserRegisterDto;
 import sparta.login.domain.user.repository.UserRepository;
+import sparta.login.global.exception.BadValueException;
+import sparta.login.global.exception.ExceptionEnum;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class Userservice {
 	public UserRegisterDto registerUser(UserRegisterDto userRegisterDto) {
 
 		if (userRepository.existsByUsername(userRegisterDto.getUsername())) {
-			throw new Exception()
+			throw new BadValueException(ExceptionEnum.USER_ALREADY_EXISTS);
 		}
 
 

@@ -14,6 +14,6 @@ springdoc:
     operations-sorter: alpha
 
 jwt:
-  secret: test
+  secret: your-very-long-secret-key-string-at-least-32-characters
   access-expire-millis: 1800000  # 액세스 토큰 만료: 30분
   refresh-expire-millis: 864000000 # 리프레시 토큰 만료: 10일
